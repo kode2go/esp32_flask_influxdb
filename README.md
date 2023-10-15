@@ -1,3 +1,7 @@
+# Todo
+
+https://github.com/kode2go/esp32_flask_influxdb/issues/1
+
 # Project
 
 1. The code sets up a Flask web application to display and manage data received from an ESP32 device and stored in an InfluxDB database.
