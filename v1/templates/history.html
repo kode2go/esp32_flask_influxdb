@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data History</title>
+    <!-- Include Plotly.js from a CDN -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Data History</h1>
+    <p>
+        <a href="/flask/display">Live Data</a> |
+        <a href="/flask/history?day=current">Current Day</a> |
+        <a href="/flask/history?day=previous">Previous Day</a>
+    </p>
+
+    <div id="chart"></div>
+</body>
+<script>
+const chart = document.getElementById('chart');
+
+// Define the layout for the chart
+const layout = {
+    title: 'Data Chart',
+    xaxis: {
+        title: 'Time'
+    },
+    yaxis: {
+        title: 'Value'
+    }
+};
+
+function updateChart(day) {
+    fetch(`/flask/history_data?day=${day}`)
+        .then(response => response.json())
+        .then(data => {
+            const x = data.map(item => item.time);
+            const y = data.map(item => item.value);
+
+            const plotData = [{
+                x: x,
+                y: y,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Data'
+            }];
+
+            Plotly.newPlot(chart, plotData, layout);
+        });
+}
+
+// Handle the day parameter from the URL and update the chart
+const urlParams = new URLSearchParams(window.location.search);
+const selectedDay = urlParams.get('day');
+
+if (selectedDay) {
+    updateChart(selectedDay);
+}
+
+</script>
+</html>
