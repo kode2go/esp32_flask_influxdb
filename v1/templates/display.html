@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Display</title>
+    <!-- Include Plotly.js from a CDN -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+</head>
+<body>
+    <h1>Data Display</h1>
+    <p>
+        <a href="/flask/history">Historical</a> |
+    </p>
+
+    <div id="chart"></div>
+
+    
+    <script>
+        // JavaScript code to create a Plotly chart
+        const initialData = [
+            {
+                x: [{% for data in data_points %} "{{ data.time }}", {% endfor %}],
+                y: [{% for data in data_points %} {{ data.value }}, {% endfor %}],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Data'
+            }
+        ];
+    
+        const layout = {
+            title: 'Data Chart',
+            xaxis: {
+                title: 'Time'
+            },
+            yaxis: {
+                title: 'Value'
+            }
+        };
+    
+        const chart = document.getElementById('chart');
+    
+        // Create the initial chart
+        Plotly.newPlot(chart, initialData, layout);
+    
+        // Listen for real-time updates from the server
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('new_data', function(data) {
+            // Update the chart with new data point
+            Plotly.extendTraces(chart, { x: [[data.time]], y: [[data.value]] }, [0]);
+        });
+    </script>
+</body>
+</html>
